@@ -1,276 +1,304 @@
 #include "helpers.h"
+#include <stdio.h>
 #include <math.h>
 
 // Convert image to grayscale
 void grayscale(int height, int width, RGBTRIPLE image[height][width])
 {
-    int new_color = 0;
     for (int i = 0; i < height; i++)
     {
-        for (int k = 0; k < width; k++)
+        for (int j = 0; j < width; j++)
         {
-            new_color = round(((float) image[i][k].rgbtRed + image[i][k].rgbtGreen + image[i][k].rgbtBlue) / 3);
-            image[i][k].rgbtRed = new_color;
-            image[i][k].rgbtGreen = new_color;
-            image[i][k].rgbtBlue = new_color;
+            //for some reason i'm still getting a stupid rounding issue here...............................
+            float average = image[i][j].rgbtBlue + image[i][j].rgbtGreen + image[i][j].rgbtRed;
+            average = average / 3;
+            int rounded = rintf(average);
+            image[i][j].rgbtBlue = roundf(rounded);
+            image[i][j].rgbtGreen = roundf(rounded);
+            image[i][j].rgbtRed = roundf(rounded);
         }
-    }
-    return;
-}
 
-// Convert image to sepia
-void sepia(int height, int width, RGBTRIPLE image[height][width])
-{
-    //3D Array for storing new image
-    //new_image[height][width][0] represents new sepia Red pixel
-    //new_image[height][width][1] represents new sepia Green pixel
-    //new_image[height][width][2] represents new sepia Blue pixel
-    int new_image[height][width][3];
-    //Iterating through each row
-    for (int i = 0; i < height; i++)
-    {
-        //Iterating through each column
-        for (int k = 0; k < width; k++)
-        {
-            //Generating sepia Red
-            new_image[i][k][0] = round(.393 * image[i][k].rgbtRed + .769 * image[i][k].rgbtGreen + .189 * image[i][k].rgbtBlue);
-            //Generating sepia Green
-            new_image[i][k][1] = round(.349 * image[i][k].rgbtRed + .686 * image[i][k].rgbtGreen + .168 * image[i][k].rgbtBlue);
-            //Generating sepia Blue
-            new_image[i][k][2] = round(.272 * image[i][k].rgbtRed + .534 * image[i][k].rgbtGreen + .131 * image[i][k].rgbtBlue);
-            //Capping new Red to 255
-            if (new_image[i][k][0] > 255)
-            {
-                new_image[i][k][0] = 255;
-            }
-            //Capping new Green to 255
-            if (new_image[i][k][1] > 255)
-            {
-                new_image[i][k][1] = 255;
-            }
-            //Capping new Blue to 255
-            if (new_image[i][k][2] > 255)
-            {
-                new_image[i][k][2] = 255;
-            }
-        }
     }
-    for (int i = 0; i < height; i++)
-    {
-        for (int k = 0; k < width; k++)
-        {
-            //Assign the new color values to the original image
-            image[i][k].rgbtRed = new_image[i][k][0];
-            image[i][k].rgbtGreen = new_image[i][k][1];
-            image[i][k].rgbtBlue = new_image[i][k][2];
-        }
-    }
+
     return;
 }
 
 // Reflect image horizontally
 void reflect(int height, int width, RGBTRIPLE image[height][width])
 {
-    //Array for storing new image
-    RGBTRIPLE new_image[height][width];
-    //Iterating through each row
-    for (int i = 0; i < height; i++)
+    RGBTRIPLE swap;
+    if (width % 2 != 0)
     {
-        //Iterating through each column
-        for (int k = 0; k < width; k++)
+        for (int i = 0; i < height; i++)
         {
-            //Reflecting pixels and storing in array new_image
-            new_image[i][k].rgbtRed = image[i][width - 1 - k].rgbtRed;
-            new_image[i][k].rgbtGreen = image[i][width - 1 - k].rgbtGreen;
-            new_image[i][k].rgbtBlue = image[i][width - 1 - k].rgbtBlue;
+            // printf("[i][0]Before: %i\n[i][width]Before: %i\n", image[i][0].rgbtRed, image[i][width - 1].rgbtRed);
+            swap = image[i][0];
+            image[i][0] = image[i][width - 1];
+            image[i][width - 1] = swap;
+            // printf("[i][0]After: %i\n[i][width]After: %i\n", image[i][0].rgbtRed, image[i][width - 1].rgbtRed);
+            for (int j = 1; j < ((width / 2)  + 0.5); j++)
+            {
+                swap = image[i][j];
+                image[i][j] = image[i][(width - 1) - j];
+                image[i][(width - 1) - j] = swap;
+            }
         }
     }
-    //Copying pixels from array new_image to array image
-    for (int i = 0; i < height; i++)
+    else
     {
-        for (int k = 0; k < width; k++)
+        for (int i = 0; i < height; i++)
         {
-            image[i][k].rgbtRed = new_image[i][k].rgbtRed;
-            image[i][k].rgbtGreen = new_image[i][k].rgbtGreen;
-            image[i][k].rgbtBlue = new_image[i][k].rgbtBlue;
+            // printf("[i][0]Before: %i\n[i][width]Before: %i\n", image[i][0].rgbtRed, image[i][width - 1].rgbtRed);
+            swap = image[i][0];
+            image[i][0] = image[i][width - 1];
+            image[i][width - 1] = swap;
+            // printf("[i][0]After: %i\n[i][width]After: %i\n", image[i][0].rgbtRed, image[i][width - 1].rgbtRed);
+            for (int j = 1; j < (width / 2); j++)
+            {
+                swap = image[i][j];
+                image[i][j] = image[i][(width - 1) - j];
+                image[i][(width - 1) - j] = swap;
+            }
         }
     }
+
     return;
+
 }
 
 // Blur image
 void blur(int height, int width, RGBTRIPLE image[height][width])
 {
-    //3D Array for storing new image
-    //new_image[height][width][0] represents new sepia Red pixel
-    //new_image[height][width][1] represets new sepia Green pixel
-    //new_image[height][width][2] represents new sepia Blue pixel
-    int new_image[height][width][3];
-    //Iterating through each row
+    typedef struct
+    {
+        int Red;
+        int Blue;
+        int Green;
+    }
+    temp;
+    temp image2[height][width];
+
     for (int i = 0; i < height; i++)
     {
-        //Iterating through each column
-        for (int k = 0; k < width; k++)
+        for (int j = 0; j < width; j++)
         {
-            new_image[i][k][0] = 0;
-            new_image[i][k][1] = 0;
-            new_image[i][k][2] = 0;
-            //Handling exceptions first
-            //Top left
-            if (i == 0 && k == 0)
+            float averageR = image[i][j].rgbtRed;
+            float averageG = image[i][j].rgbtGreen;
+            float averageB = image[i][j].rgbtBlue;
+            int counter = 1;
+
+            // 7
+            if (i != 0)
             {
-                for (int a = 0; a < 2; a++)
-                {
-                    for (int b = 0; b < 2; b++)
-                    {
-                        new_image[i][k][0] += image[i + a][k + b].rgbtRed;
-                        new_image[i][k][1] += image[i + a][k + b].rgbtGreen;
-                        new_image[i][k][2] += image[i + a][k + b].rgbtBlue;
-                    }
-                }
-                new_image[i][k][0] = round((float) new_image[i][k][0] / 4);
-                new_image[i][k][1] = round((float) new_image[i][k][1] / 4);
-                new_image[i][k][2] = round((float) new_image[i][k][2] / 4);
+                averageR += image[i - 1][j].rgbtRed;
+                averageB += image[i - 1][j].rgbtBlue;
+                averageG += image[i - 1][j].rgbtGreen;
+                counter++;
             }
-            //Top right
-            else if (i == 0 && k == width - 1)
+            //4
+            if (j != 0)
             {
-                for (int a = 0; a < 2; a++)
-                {
-                    for (int b = -1; b < 1; b++)
-                    {
-                        new_image[i][k][0] += image[i + a][k + b].rgbtRed;
-                        new_image[i][k][1] += image[i + a][k + b].rgbtGreen;
-                        new_image[i][k][2] += image[i + a][k + b].rgbtBlue;
-                    }
-                }
-                new_image[i][k][0] = round((float) new_image[i][k][0] / 4);
-                new_image[i][k][1] = round((float) new_image[i][k][1] / 4);
-                new_image[i][k][2] = round((float) new_image[i][k][2] / 4);
+                averageR += image[i][j - 1].rgbtRed;
+                averageB += image[i][j - 1].rgbtBlue;
+                averageG += image[i][j - 1].rgbtGreen;
+                counter++;
             }
-            //Bottom right
-            else if (i == height - 1 && k == width - 1)
+            //2
+            if (i != (height - 1))
             {
-                for (int a = -1; a < 1; a++)
-                {
-                    for (int b = -1; b < 1; b++)
-                    {
-                        new_image[i][k][0] += image[i + a][k + b].rgbtRed;
-                        new_image[i][k][1] += image[i + a][k + b].rgbtGreen;
-                        new_image[i][k][2] += image[i + a][k + b].rgbtBlue;
-                    }
-                }
-                new_image[i][k][0] = round((float) new_image[i][k][0] / 4);
-                new_image[i][k][1] = round((float) new_image[i][k][1] / 4);
-                new_image[i][k][2] = round((float) new_image[i][k][2] / 4);
+                averageR += image[i + 1][j].rgbtRed;
+                averageB += image[i + 1][j].rgbtBlue;
+                averageG += image[i + 1][j].rgbtGreen;
+                counter++;
             }
-            //Bottom left
-            else if (i == height - 1 && k == 0)
+            //5
+            if (j != (width - 1))
             {
-                for (int a = -1; a < 1; a++)
-                {
-                    for (int b = 0; b < 2; b++)
-                    {
-                        new_image[i][k][0] += image[i + a][k + b].rgbtRed;
-                        new_image[i][k][1] += image[i + a][k + b].rgbtGreen;
-                        new_image[i][k][2] += image[i + a][k + b].rgbtBlue;
-                    }
-                }
-                new_image[i][k][0] = round((float) new_image[i][k][0] / 4);
-                new_image[i][k][1] = round((float) new_image[i][k][1] / 4);
-                new_image[i][k][2] = round((float) new_image[i][k][2] / 4);
+                averageR += image[i][j + 1].rgbtRed;
+                averageB += image[i][j + 1].rgbtBlue;
+                averageG += image[i][j + 1].rgbtGreen;
+                counter++;
             }
-            //Top row
-            else if (i == 0)
+            //1
+            if ((i != 0) && (j != 0))
             {
-                for (int a = 0; a < 2; a++)
-                {
-                    for (int b = -1; b < 2; b++)
-                    {
-                        new_image[i][k][0] += image[i + a][k + b].rgbtRed;
-                        new_image[i][k][1] += image[i + a][k + b].rgbtGreen;
-                        new_image[i][k][2] += image[i + a][k + b].rgbtBlue;
-                    }
-                }
-                new_image[i][k][0] = round((float) new_image[i][k][0] / 6);
-                new_image[i][k][1] = round((float) new_image[i][k][1] / 6);
-                new_image[i][k][2] = round((float) new_image[i][k][2] / 6);
+                averageR += image[i - 1][j - 1].rgbtRed;
+                averageB += image[i - 1][j - 1].rgbtBlue;
+                averageG += image[i - 1][j - 1].rgbtGreen;
+                counter++;
             }
-            //Right column
-            else if (k == width - 1)
+            //3
+            if ((i != 0) && (j != (width - 1)))
             {
-                for (int a = -1; a < 2; a++)
-                {
-                    for (int b = -1; b < 1; b++)
-                    {
-                        new_image[i][k][0] += image[i + a][k + b].rgbtRed;
-                        new_image[i][k][1] += image[i + a][k + b].rgbtGreen;
-                        new_image[i][k][2] += image[i + a][k + b].rgbtBlue;
-                    }
-                }
-                new_image[i][k][0] = round((float) new_image[i][k][0] / 6);
-                new_image[i][k][1] = round((float) new_image[i][k][1] / 6);
-                new_image[i][k][2] = round((float) new_image[i][k][2] / 6);
+                averageR += image[i - 1][j + 1].rgbtRed;
+                averageB += image[i - 1][j + 1].rgbtBlue;
+                averageG += image[i - 1][j + 1].rgbtGreen;
+                counter++;
             }
-            //Bottom row
-            else if (i == height - 1)
+            //6
+            if ((i != (height - 1)) && (j != 0))
             {
-                for (int a = -1; a < 1; a++)
-                {
-                    for (int b = -1; b < 2; b++)
-                    {
-                        new_image[i][k][0] += image[i + a][k + b].rgbtRed;
-                        new_image[i][k][1] += image[i + a][k + b].rgbtGreen;
-                        new_image[i][k][2] += image[i + a][k + b].rgbtBlue;
-                    }
-                }
-                new_image[i][k][0] = round((float) new_image[i][k][0] / 6);
-                new_image[i][k][1] = round((float) new_image[i][k][1] / 6);
-                new_image[i][k][2] = round((float) new_image[i][k][2] / 6);
+                averageR += image[i + 1][j - 1].rgbtRed;
+                averageB += image[i + 1][j - 1].rgbtBlue;
+                averageG += image[i + 1][j - 1].rgbtGreen;
+                counter++;
             }
-            //Left column
-            else if (k == 0)
+            //8
+            if ((i != (height - 1)) && (j != (width - 1)))
             {
-                for (int a = -1; a < 2; a++)
-                {
-                    for (int b = 0; b < 2; b++)
-                    {
-                        new_image[i][k][0] += image[i + a][k + b].rgbtRed;
-                        new_image[i][k][1] += image[i + a][k + b].rgbtGreen;
-                        new_image[i][k][2] += image[i + a][k + b].rgbtBlue;
-                    }
-                }
-                new_image[i][k][0] = round((float) new_image[i][k][0] / 6);
-                new_image[i][k][1] = round((float) new_image[i][k][1] / 6);
-                new_image[i][k][2] = round((float) new_image[i][k][2] / 6);
+                averageR += image[i + 1][j + 1].rgbtRed;
+                averageB += image[i + 1][j + 1].rgbtBlue;
+                averageG += image[i + 1][j + 1].rgbtGreen;
+                counter++;
             }
-            //Rest of the image
-            else
-            {
-                for (int a = -1; a < 2; a++)
-                {
-                    for (int b = -1; b < 2; b++)
-                    {
-                        new_image[i][k][0] += image[i + a][k + b].rgbtRed;
-                        new_image[i][k][1] += image[i + a][k + b].rgbtGreen;
-                        new_image[i][k][2] += image[i + a][k + b].rgbtBlue;
-                    }
-                }
-                new_image[i][k][0] = round((float) new_image[i][k][0] / 9);
-                new_image[i][k][1] = round((float) new_image[i][k][1] / 9);
-                new_image[i][k][2] = round((float) new_image[i][k][2] / 9);
-            }
+
+            averageR = averageR / counter;
+            averageB = averageB / counter;
+            averageG = averageG / counter;
+            image2[i][j].Red = roundf(averageR);
+            image2[i][j].Blue = roundf(averageB);
+            image2[i][j].Green = roundf(averageG);
         }
     }
     for (int i = 0; i < height; i++)
     {
-        for (int k = 0; k < width; k++)
+        for (int j = 0; j < width; j++)
         {
-            //Assign the new color values to the original image
-            image[i][k].rgbtRed = new_image[i][k][0];
-            image[i][k].rgbtGreen = new_image[i][k][1];
-            image[i][k].rgbtBlue = new_image[i][k][2];
+            image[i][j].rgbtRed = image2[i][j].Red;
+            image[i][j].rgbtBlue = image2[i][j].Blue;
+            image[i][j].rgbtGreen = image2[i][j].Green;
         }
     }
+
+
+    return;
+}
+
+// Detect edges
+void edges(int height, int width, RGBTRIPLE image[height][width])
+{
+    typedef struct
+    {
+        int Red;
+        int Blue;
+        int Green;
+    }
+    temp;
+    temp image2[height][width];
+
+    for (int i = 0; i < height; i++)
+    {
+        for (int j = 0; j < width; j++)
+        {
+
+
+            float GxR = 0;
+            float GyR = 0;
+            float GxG = 0;
+            float GyG = 0;
+            float GxB = 0;
+            float GyB = 0;
+
+            // 2
+            if (i != 0)
+            {
+                GyR += (-2 * image[i - 1][j].rgbtRed);
+                GyB += (-2 * image[i - 1][j].rgbtBlue);
+                GyG += (-2 * image[i - 1][j].rgbtGreen);
+            }
+            //4
+            if (j != 0)
+            {
+                GxR += (-2 * image[i][j - 1].rgbtRed);
+                GxB += (-2 * image[i][j - 1].rgbtBlue);
+                GxG += (-2 * image[i][j - 1].rgbtGreen);
+            }
+            //7
+            if (i != (height - 1))
+            {
+                GyR += (2 * image[i + 1][j].rgbtRed);
+                GyB += (2 * image[i + 1][j].rgbtBlue);
+                GyG += (2 * image[i + 1][j].rgbtGreen);
+            }
+            //5
+            if (j != (width - 1))
+            {
+                GxR += (2 * image[i][j + 1].rgbtRed);
+                GxB += (2 * image[i][j + 1].rgbtBlue);
+                GxG += (2 * image[i][j + 1].rgbtGreen);
+            }
+            //1
+            if ((i != 0) && (j != 0))
+            {
+                GxR += (-1 * image[i - 1][j - 1].rgbtRed);
+                GxB += (-1 * image[i - 1][j - 1].rgbtBlue);
+                GxG += (-1 * image[i - 1][j - 1].rgbtGreen);
+                GyR += (-1 * image[i - 1][j - 1].rgbtRed);
+                GyB += (-1 * image[i - 1][j - 1].rgbtBlue);
+                GyG += (-1 * image[i - 1][j - 1].rgbtGreen);
+            }
+            //3
+            if ((i != 0) && (j != (width - 1)))
+            {
+                GxR += image[i - 1][j + 1].rgbtRed;
+                GxB += image[i - 1][j + 1].rgbtBlue;
+                GxG += image[i - 1][j + 1].rgbtGreen;
+                GyR += (-1 * image[i - 1][j + 1].rgbtRed);
+                GyB += (-1 * image[i - 1][j + 1].rgbtBlue);
+                GyG += (-1 * image[i - 1][j + 1].rgbtGreen);
+            }
+            //6
+            if ((i != (height - 1)) && (j != 0))
+            {
+                GxR += (-1 * image[i + 1][j - 1].rgbtRed);
+                GxB += (-1 * image[i + 1][j - 1].rgbtBlue);
+                GxG += (-1 * image[i + 1][j - 1].rgbtGreen);
+                GyR += image[i + 1][j - 1].rgbtRed;
+                GyB += image[i + 1][j - 1].rgbtBlue;
+                GyG += image[i + 1][j - 1].rgbtGreen;
+            }
+            //8
+            if ((i != (height - 1)) && (j != (width - 1)))
+            {
+                GxR += image[i + 1][j + 1].rgbtRed;
+                GxB += image[i + 1][j + 1].rgbtBlue;
+                GxG += image[i + 1][j + 1].rgbtGreen;
+                GyR += image[i + 1][j + 1].rgbtRed;
+                GyB += image[i + 1][j + 1].rgbtBlue;
+                GyG += image[i + 1][j + 1].rgbtGreen;
+            }
+            float SobelR = sqrt((GxR * GxR) + (GyR * GyR));
+            float SobelB = sqrt((GxB * GxB) + (GyB * GyB));
+            float SobelG = sqrt((GxG * GxG) + (GyG * GyG));
+            image2[i][j].Red = round(SobelR);
+            image2[i][j].Blue = round(SobelB);
+            image2[i][j].Green = round(SobelG);
+
+            if (image2[i][j].Red > 255)
+            {
+                image2[i][j].Red = 255;
+            }
+            if (image2[i][j].Blue > 255)
+            {
+                image2[i][j].Blue = 255;
+            }
+            if (image2[i][j].Green > 255)
+            {
+                image2[i][j].Green = 255;
+            }
+        }
+    }
+
+
+    for (int i = 0; i < height; i++)
+    {
+        for (int j = 0; j < width; j++)
+        {
+            image[i][j].rgbtRed = image2[i][j].Red;
+            image[i][j].rgbtBlue = image2[i][j].Blue;
+            image[i][j].rgbtGreen = image2[i][j].Green;
+        }
+    }
+
     return;
 }
