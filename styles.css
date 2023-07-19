@@ -1,41 +1,62 @@
-.button{
-    padding: .8rem 2.2rem;
-    position: relative;
-    border: 3px solid transparent;
-    border-radius: 4px;
+body {
+    background-color: #fff;
+    color: #212529;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    margin: 0;
+    text-align: left;
 }
 
-.button.primary-button:hover{
-    background: whitesmoke;
-    background-clip: padding-box;
-    color: black;
+.container {
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 15px;
+    padding-right: 15px;
 }
 
-.button.secondary-button:hover{
-    background-clip: padding-box;
-    color: black;
-    background: whitesmoke;
+.jumbotron {
+    background-color: #477bff;
+    color: #fff;
+    margin-bottom: 2rem;
+    padding: 2rem 1rem;
+    text-align: center;
 }
 
-.site-main .site-banner .site-title h3{
-    padding-top: 35%;
-    font-weight: 500;
+.section {
+    padding: 0.5rem 2rem 1rem 2rem;
 }
 
-.site-main .site-banner .site-title h3::after{
-    content: " ";
-    height: 2px;
-    width: 18vw;
-    background: black;
-    display: inline-block;
-    margin-left: 5%;
-    transform: translateY(-10px);
+.section:hover {
+    background-color: #f5f5f5;
+    transition: color 2s ease-in-out, background-color 0.15s ease-in-out;
 }
 
-.site-main .site-banner .site-title h1{
-    font-size: 5rem;
+h1 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 48px;
 }
 
-.site-main .site-banner .site-title h4{
-    font-size: 1.5rem;
+button, input[type="submit"] {
+    background-color: #d9edff;
+    border: 1px solid transparent;
+    border-radius: 0.25rem;
+    font-size: 0.95rem;
+    font-weight: 400;
+    line-height: 1.5;
+    padding: 0.375rem 0.75rem;
+    text-align: center;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    vertical-align: middle;
+}
+
+
+input[type="text"] {
+    line-height: 1.8;
+    width: 25%;
+}
+
+input[type="text"]:hover {
+    background-color: #f5f5f5;
+    transition: color 2s ease-in-out, background-color 0.15s ease-in-out;
 }
