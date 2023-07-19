@@ -1,1 +1,1 @@
-SELECT AVG(energy) FROM songs;
+SELECT title, year FROM movies WHERE title LIKE "Harry Potter%" ORDER BY 2;

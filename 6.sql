@@ -1,4 +1,1 @@
-
-
-
-SELECT songs.name FROM songs JOIN artists ON songs.artist_id = artists.id WHERE artists.name = 'Post Malone';
+SELECT avg(rating) FROM ratings JOIN movies ON ratings.movie_id = movies.id WHERE year = 2012;
